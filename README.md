@@ -31,10 +31,7 @@ yarn add formpipe
 
 ```typescript
 /* SETUP */
-import {
-  createValidationMiddleware,
-  coreValidators,
-} from "validation-middleware";
+import { createValidationMiddleware, coreValidators } from "formpipe";
 
 const middleware = createValidationMiddleware({
   ...coreValidators,
@@ -95,10 +92,7 @@ const customValidators = {
 
 ```typescript
 /* SETUP */
-import {
-  createValidationMiddleware,
-  coreValidators,
-} from "validation-middleware";
+import { createValidationMiddleware, coreValidators } from "formpipe";
 
 const middleware = createValidationMiddleware({
   ...coreValidators,
