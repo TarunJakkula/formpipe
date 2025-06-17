@@ -8,3 +8,5 @@ export const coreValidators: Record<string, Validator> = {
   trimmed_non_empty,
   email,
 };
+
+export type CoreValidators = typeof coreValidators;

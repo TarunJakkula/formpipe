@@ -1,17 +1,27 @@
-export type MiddlewareResult = "accepted" | "not_accepted";
+// types.ts
+export type ValidationResult = "accepted" | "not_accepted";
 
-export type MiddlewareOutput<ErrorCode extends string = string> = {
-  result: MiddlewareResult;
-  value: any;
-  error: string | undefined;
-  errorCode: ErrorCode;
-};
+export interface MiddlewareOutput<T = any> {
+  result: ValidationResult;
+  value: T;
+  error?: string;
+  errorCode: string;
+}
 
-export type Validator<ErrorCode extends string = string> = (
-  value: any
-) => MiddlewareOutput<ErrorCode>;
+export type Validator<T = any, R = T> = (value: T) => MiddlewareOutput<R>;
 
-export type ValidatorMap<ErrorCode extends string = string> = Record<
-  string,
-  Validator<ErrorCode>
->;
+export type ValidatorMap = Record<string, Validator>;
+
+export interface ValidationInput<T = any> {
+  value: T;
+}
+
+// Extract validator names as a union type
+export type ValidatorKeys<T extends ValidatorMap> = keyof T;
+
+// Middleware function type with proper generics
+export type ValidationMiddleware<T extends ValidatorMap> = <
+  K extends ValidatorKeys<T>[]
+>(
+  ...args: [...steps: K, input: ValidationInput]
+) => MiddlewareOutput;

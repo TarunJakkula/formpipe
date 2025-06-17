@@ -33,9 +33,8 @@ yarn add formpipe
 /* SETUP */
 import { createValidationMiddleware, coreValidators } from "formpipe";
 
-const middleware = createValidationMiddleware({
-  ...coreValidators,
-});
+const allValidators = extendValidators({});
+const middleware = createValidationMiddleware(allValidators);
 ```
 
 ### ✅ Use
@@ -43,7 +42,7 @@ const middleware = createValidationMiddleware({
 ```typescript
 /* USAGE */
 const { result, value, error, errorCode } = middleware(
-  "trimmed_not_empty",
+  "trimmed_non_empty",
   "email",
   { value: "  user@example.com  " }
 );
@@ -63,10 +62,10 @@ You can define your own validator logic and plug it into the middleware.
 
 ```typescript
 /* DEFINE */
-const usernameValidator = (value: string) => {
+const username = (value: string): MiddlewareOutput<string> => {
   if (!value) {
     return {
-      result: "not_accepted",
+      result: "not_accepted" as const,
       value,
       error: "Username required",
       errorCode: "USERNAME_REQUIRED",
@@ -74,13 +73,18 @@ const usernameValidator = (value: string) => {
   }
   if (value.length < 3) {
     return {
-      result: "not_accepted",
+      result: "not_accepted" as const,
       value,
-      error: "Too short",
+      error: "Username too short",
       errorCode: "USERNAME_TOO_SHORT",
     };
   }
-  return { result: "accepted", value, error: undefined, errorCode: "NONE" };
+  return {
+    result: "accepted" as const,
+    value,
+    error: undefined,
+    errorCode: "NONE",
+  };
 };
 
 const customValidators = {
@@ -92,12 +96,10 @@ const customValidators = {
 
 ```typescript
 /* SETUP */
-import { createValidationMiddleware, coreValidators } from "formpipe";
+import { createValidationMiddleware, extendValidators } from "formpipe";
 
-const middleware = createValidationMiddleware({
-  ...coreValidators,
-  ...customValidators,
-});
+const allValidators = extendValidators(customValidators);
+const middleware = createValidationMiddleware(allValidators);
 ```
 
 ### ✅ Use
