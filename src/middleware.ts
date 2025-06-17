@@ -1,39 +1,33 @@
-import { ValidationInput, ValidationMiddleware, ValidatorMap } from "./types";
-import { coreValidators, CoreValidators } from "./validators/core";
+import {
+  MiddlewareOutput,
+  ValidationInput,
+  ValidationMiddleware,
+  ValidatorMap,
+} from "./types.js";
 
 export function createValidationMiddleware<T extends ValidatorMap>(
   validators: T
 ): ValidationMiddleware<T> {
-  return ((...args: any[]) => {
-    const input = args[args.length - 1] as ValidationInput;
-    const steps = args.slice(0, -1) as (keyof T)[];
+  return <K extends readonly (keyof T)[]>(
+    input: ValidationInput<any, T> & { steps: K }
+  ): MiddlewareOutput => {
     let currentValue = input.value;
-    for (const step of steps) {
+
+    for (const step of input.steps) {
       const validator = validators[step];
       if (!validator) throw new Error(`Unknown validator: ${String(step)}`);
+
       const result = validator(currentValue);
       if (result.result === "not_accepted") {
         return result;
       }
       currentValue = result.value;
     }
-
     return {
       result: "accepted" as const,
       value: currentValue,
       error: undefined,
       errorCode: "NONE",
     };
-  }) as ValidationMiddleware<T>;
-}
-
-export type ExtendedValidators<T extends ValidatorMap> = T & CoreValidators;
-
-export function extendValidators<T extends ValidatorMap>(
-  customValidators: T
-): ExtendedValidators<T> {
-  return {
-    ...coreValidators,
-    ...customValidators,
-  } as ExtendedValidators<T>;
+  };
 }
