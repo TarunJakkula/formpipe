@@ -1,0 +1,37 @@
+{
+  "name": "formpipe",
+  "version": "0.0.1",
+  "description": "Composable validation middleware for forms and inputs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TarunJakkula/formpipe.git"
+  },
+  "keywords": [
+    "validation",
+    "middleware",
+    "react",
+    "form",
+    "typescript"
+  ],
+  "files": [
+    "dist"
+  ],
+  "author": "Tarun Jakkula",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}
