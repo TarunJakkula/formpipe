@@ -1,4 +1,4 @@
-import { MiddlewareOutput } from "../types";
+import { MiddlewareOutput } from "../types.js";
 
 const non_empty = (value: string): MiddlewareOutput => {
   if (!value || value.trim() === "") {

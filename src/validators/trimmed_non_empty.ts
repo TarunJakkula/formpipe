@@ -1,4 +1,4 @@
-import { MiddlewareOutput } from "../types";
+import { MiddlewareOutput } from "../types.js";
 
 const trimmed_non_empty = (value: string): MiddlewareOutput => {
   const trimmed = value.trim();

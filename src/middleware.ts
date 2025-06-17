@@ -1,4 +1,4 @@
-import { ValidatorMap, MiddlewareOutput } from "./types";
+import { ValidatorMap, MiddlewareOutput } from "./types.js";
 
 export function createValidationMiddleware<
   ErrorCode extends string,
@@ -20,7 +20,10 @@ export function createValidationMiddleware<
 
     for (const key of steps) {
       const validator = validators[key];
-      if (!validator) throw new Error(`Validator "${String(key)}" not found.`);
+      if (!validator) {
+        console.error(`Available validators:`, Object.keys(validators));
+        throw new Error(`Validator "${String(key)}" not found.`);
+      }
       const result = validator(current);
       if (result.result === "not_accepted") return result;
       current = result.value;

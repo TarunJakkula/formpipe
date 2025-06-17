@@ -1,4 +1,4 @@
-import { MiddlewareOutput } from "../types";
+import { MiddlewareOutput } from "../types.js";
 
 const email = (value: string): MiddlewareOutput => {
   const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
