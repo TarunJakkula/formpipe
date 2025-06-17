@@ -23,7 +23,9 @@
     "typescript"
   ],
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "author": "Tarun Jakkula",
   "license": "MIT",
