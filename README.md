@@ -33,19 +33,17 @@ yarn add formpipe
 /* SETUP */
 import { createValidationMiddleware, coreValidators } from "formpipe";
 
-const allValidators = extendValidators({});
-const middleware = createValidationMiddleware(allValidators);
+const middleware = createValidationMiddleware(coreValidators);
 ```
 
 ### ✅ Use
 
 ```typescript
 /* USAGE */
-const { result, value, error, errorCode } = middleware(
-  "trimmed_non_empty",
-  "email",
-  { value: "  user@example.com  " }
-);
+const { result, value, error, errorCode } = middleware({
+  steps: ["non_empty", "email"],
+  value: "  user@example.com  ",
+});
 
 if (result === "accepted") {
   console.log(value); // 'user@example.com'
@@ -62,10 +60,12 @@ You can define your own validator logic and plug it into the middleware.
 
 ```typescript
 /* DEFINE */
-const username = (value: string): MiddlewareOutput<string> => {
+import { MiddlewareOutput, Validator } from "formpipe";
+
+const usernameValidator: Validator = (value: string): MiddlewareOutput => {
   if (!value) {
     return {
-      result: "not_accepted" as const,
+      result: "not_accepted",
       value,
       error: "Username required",
       errorCode: "USERNAME_REQUIRED",
@@ -73,18 +73,13 @@ const username = (value: string): MiddlewareOutput<string> => {
   }
   if (value.length < 3) {
     return {
-      result: "not_accepted" as const,
+      result: "not_accepted",
       value,
-      error: "Username too short",
+      error: "Too short",
       errorCode: "USERNAME_TOO_SHORT",
     };
   }
-  return {
-    result: "accepted" as const,
-    value,
-    error: undefined,
-    errorCode: "NONE",
-  };
+  return { result: "accepted", value, errorCode: "NONE" };
 };
 
 const customValidators = {
@@ -96,9 +91,13 @@ const customValidators = {
 
 ```typescript
 /* SETUP */
-import { createValidationMiddleware, extendValidators } from "formpipe";
+import {
+  createValidationMiddleware,
+  combineValidators,
+  coreValidators,
+} from "formpipe";
 
-const allValidators = extendValidators(customValidators);
+const allValidators = combineValidators(coreValidators, customValidators);
 const middleware = createValidationMiddleware(allValidators);
 ```
 
@@ -106,7 +105,8 @@ const middleware = createValidationMiddleware(allValidators);
 
 ```typescript
 /* USAGE */
-const { result, value, error, errorCode } = middleware("username", {
+const { result, value, error, errorCode } = middleware({
+  steps: ["username"],
   value: "   user   ",
 });
 
@@ -124,17 +124,24 @@ if (result === "accepted") {
 Creates a validation pipeline from a map of named validators.
 
 ```typescript
-type Validator = (value: any) => MiddlewareOutput;
+export type ValidationResult = "accepted" | "not_accepted";
 
-type MiddlewareOutput = {
-  result: "accepted" | "not_accepted";
-  value: any;
+export interface MiddlewareOutput {
+  result: ValidationResult;
+  value: string;
   error?: string;
   errorCode: string;
-};
+}
+
+export type Validator = (value: string) => MiddlewareOutput;
 ```
 
-`middleware(...steps: string[], { value }: { value: any })`
+```typescript
+middleware({ steps, value}: {
+    value: string;
+    steps: (keyof T)[];  // where T = CoreValidators & typeof customValidators
+})
+```
 
 Executes validators sequentially. If any validator fails, it short-circuits and returns an error.
 

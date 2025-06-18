@@ -1,18 +1,17 @@
-import { MiddlewareOutput } from "../types.js";
+import { MiddlewareOutput, Validator } from "../types.js";
 
-const non_empty = (value: string): MiddlewareOutput<string> => {
+const non_empty: Validator = (value: string): MiddlewareOutput => {
   if (!value || value.length === 0) {
     return {
-      result: "not_accepted" as const,
+      result: "not_accepted",
       value,
       error: "Value cannot be empty",
       errorCode: "NOT_EMPTY_REQUIRED",
     };
   }
   return {
-    result: "accepted" as const,
+    result: "accepted",
     value,
-    error: undefined,
     errorCode: "NONE",
   };
 };
