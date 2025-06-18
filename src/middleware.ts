@@ -4,7 +4,6 @@ import {
   ValidationMiddleware,
   ValidatorMap,
 } from "./types.js";
-import { coreValidators } from "./validators/core.js";
 
 export function createValidationMiddleware<T extends ValidatorMap>(
   validators: T
@@ -33,11 +32,12 @@ export function createValidationMiddleware<T extends ValidatorMap>(
   };
 }
 
-export function combineValidators<U extends ValidatorMap>(
-  customValidators: U
-): U {
+export function combineValidators<
+  T extends ValidatorMap,
+  U extends ValidatorMap
+>(coreValidators: T, customValidators: U): T & U {
   return {
     ...coreValidators,
     ...customValidators,
-  } as U;
+  } as T & U;
 }
